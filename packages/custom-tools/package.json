@@ -1,0 +1,20 @@
+{
+  "name": "custom-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions"]
+  },
+  "dependencies": {
+    "defuddle": "^0.18.1",
+    "linkedom": "^0.18.12",
+    "pdf-parse": "^2.4.5"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  }
+}

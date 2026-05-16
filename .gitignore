@@ -1,0 +1,17 @@
+# Secrets and machine-local Pi state
+.env
+auth.json
+settings.json
+models.json
+
+# Runtime/cache directories
+sessions/
+git/
+npm/
+bin/
+node_modules/
+**/node_modules/
+
+# Logs / OS files
+*.log
+.DS_Store

@@ -1,0 +1,9 @@
+{
+  "name": "pi-setup",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.1.2",
+  "scripts": {
+    "install:custom-tools": "pnpm --filter custom-tools install --prod"
+  }
+}
