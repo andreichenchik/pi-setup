@@ -4,6 +4,9 @@ auth.json
 settings.json
 models.json
 
+# Generated files
+AGENTS.md
+
 # Runtime/cache directories
 sessions/
 git/
