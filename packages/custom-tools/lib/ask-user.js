@@ -96,6 +96,38 @@ export function prepareAskUserArguments(args) {
   };
 }
 
+/**
+ * Decide whether the ask_user tool should be exposed for the current Pi context.
+ * The tool uses ctx.ui.custom(), which is available in the interactive TUI but
+ * not in print, JSON, piped-stdin print, or RPC modes.
+ *
+ * @param {{hasUI?: boolean}|undefined} ctx Pi extension context or a test double.
+ * @param {{argv?: string[], stdinIsTTY?: boolean|undefined}} [runtime] Runtime details for tests.
+ * @returns {boolean}
+ */
+export function shouldRegisterAskUserTool(ctx, runtime = {}) {
+  if (ctx?.hasUI !== true) return false;
+
+  const argv = runtime.argv ?? process.argv;
+  const stdinIsTTY = runtime.stdinIsTTY ?? process.stdin?.isTTY ?? false;
+  const mode = getCliMode(argv);
+
+  if (mode === "json" || mode === "rpc") return false;
+  if (argv.includes("-p") || argv.includes("--print")) return false;
+  if (!stdinIsTTY) return false;
+
+  return true;
+}
+
+function getCliMode(argv) {
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === "--mode") return argv[i + 1];
+    if (typeof arg === "string" && arg.startsWith("--mode=")) return arg.slice("--mode=".length);
+  }
+  return undefined;
+}
+
 function normalizeQuestion(raw, index) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
     throw new Error(`Question ${index + 1} must be an object.`);

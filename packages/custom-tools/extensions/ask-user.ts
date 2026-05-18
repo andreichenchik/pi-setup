@@ -18,6 +18,7 @@ import {
   isQuestionAnswered,
   normalizeQuestions,
   prepareAskUserArguments,
+  shouldRegisterAskUserTool,
 } from "../lib/ask-user.js";
 
 interface AskUserOption {
@@ -470,7 +471,7 @@ class AskUserComponent implements Component, Focusable {
   }
 }
 
-export default function askUser(pi: ExtensionAPI) {
+function registerAskUserTool(pi: ExtensionAPI) {
   pi.registerTool({
     name: "ask_user",
     label: "Ask User",
@@ -534,5 +535,18 @@ export default function askUser(pi: ExtensionAPI) {
       });
       return new Text(lines.join("\n"), 0, 0);
     },
+  });
+}
+
+/**
+ * Exposes ask_user only in Pi modes that can collect answers from the user.
+ */
+export default function askUser(pi: ExtensionAPI) {
+  let registered = false;
+
+  pi.on("session_start", (_event, ctx) => {
+    if (registered || !shouldRegisterAskUserTool(ctx)) return;
+    registered = true;
+    registerAskUserTool(pi);
   });
 }

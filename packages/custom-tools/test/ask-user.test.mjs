@@ -6,6 +6,7 @@ import {
   isQuestionAnswered,
   normalizeQuestions,
   prepareAskUserArguments,
+  shouldRegisterAskUserTool,
 } from "../lib/ask-user.js";
 
 describe("normalizeQuestions", () => {
@@ -75,6 +76,26 @@ describe("isQuestionAnswered", () => {
 
   it("accepts missing answers for optional questions", () => {
     assert.equal(isQuestionAnswered({ required: false }, undefined), true);
+  });
+});
+
+describe("shouldRegisterAskUserTool", () => {
+  it("exposes the tool only when the interactive custom UI is available", () => {
+    const interactive = { argv: ["node", "pi"], stdinIsTTY: true };
+
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, interactive), true);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: false }, interactive), false);
+    assert.equal(shouldRegisterAskUserTool({}, interactive), false);
+    assert.equal(shouldRegisterAskUserTool(undefined, interactive), false);
+  });
+
+  it("does not expose the tool in background or custom-UI-less modes", () => {
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi", "-p"], stdinIsTTY: true }), false);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi", "--print"], stdinIsTTY: true }), false);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi", "--mode", "json"], stdinIsTTY: true }), false);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi", "--mode=rpc"], stdinIsTTY: true }), false);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi"], stdinIsTTY: false }), false);
+    assert.equal(shouldRegisterAskUserTool({ hasUI: true }, { argv: ["node", "pi"], stdinIsTTY: undefined }), false);
   });
 });
 
